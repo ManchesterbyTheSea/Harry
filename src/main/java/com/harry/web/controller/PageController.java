@@ -16,7 +16,7 @@ public class PageController {
     /**
      * 登录页
      */
-    @RequestMapping(value={"/user/login", "/login"})
+    @RequestMapping("/login")
     public String login(Map<String, Object> map) {
         return "login";
     }

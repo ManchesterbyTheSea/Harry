@@ -15,7 +15,9 @@ public class User {
 
     private String picturelink;
 
-    public User(Integer id, String username, String password, String realname, String introduction, String phone, String picturelink) {
+    private String email;
+
+    public User(Integer id, String username, String password, String realname, String introduction, String phone, String picturelink, String email) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -23,6 +25,7 @@ public class User {
         this.introduction = introduction;
         this.phone = phone;
         this.picturelink = picturelink;
+        this.email = email;
     }
 
     public User() {
@@ -83,5 +86,13 @@ public class User {
 
     public void setPicturelink(String picturelink) {
         this.picturelink = picturelink == null ? null : picturelink.trim();
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email == null ? null : email.trim();
     }
 }

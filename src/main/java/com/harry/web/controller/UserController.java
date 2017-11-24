@@ -14,12 +14,18 @@ import com.harry.web.service.UserService;
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 //import org.apache.shiro.authz.annotation.RequiresRoles;
 //import org.apache.shiro.subject.Subject;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.*;
+import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * 用户控制器
@@ -29,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(value = "/user")
 public class UserController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Resource
     private UserService userService;
@@ -41,30 +48,56 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String login(@Valid User user, BindingResult result, Model model, HttpServletRequest request) {
-//        try {
-//            Subject subject = SecurityUtils.getSubject();
-//            // 已登陆则 跳到首页
-//            if (subject.isAuthenticated()) {
-//                return "redirect:/";
-//            }
-//            if (result.hasErrors()) {
-//                model.addAttribute("error", "参数错误！");
-//                return "login";
-//            }
-//            // 身份验证
-//            subject.login(new UsernamePasswordToken(user.getUsername(), ApplicationUtils.sha256Hex(user.getPassword())));
-//            // 验证成功在Session中保存用户信息
+    public String login(@Valid User user, BindingResult result, Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            model.addAttribute("error", "参数错误！");
+            return "login";
+        }
+        String username = user.getUsername();
+
+        Subject subject = SecurityUtils.getSubject();
+        UsernamePasswordToken token = new UsernamePasswordToken(username, user.getPassword());
+        try {
+            // 已登陆则 跳到首页
+            if (subject.isAuthenticated()) {
+                return "redirect:/";
+            }
+            logger.info("对用户[" + username + "]进行登录验证..验证开始");
+
+            subject.login(token);
+
+            logger.info("对用户[" + username + "]进行登录验证..验证通过");
+        }catch(UnknownAccountException uae){
+            logger.info("对用户[" + username + "]进行登录验证..验证未通过,未知账户");
+            redirectAttributes.addFlashAttribute("message", "未知账户");
+        }catch(IncorrectCredentialsException ice){
+            logger.info("对用户[" + username + "]进行登录验证..验证未通过,错误的凭证");
+            redirectAttributes.addFlashAttribute("message", "密码不正确");
+        }catch(LockedAccountException lae){
+            logger.info("对用户[" + username + "]进行登录验证..验证未通过,账户已锁定");
+            redirectAttributes.addFlashAttribute("message", "账户已锁定");
+        }catch(ExcessiveAttemptsException eae){
+            logger.info("对用户[" + username + "]进行登录验证..验证未通过,错误次数过多");
+            redirectAttributes.addFlashAttribute("message", "用户名或密码错误次数过多");
+        }catch(AuthenticationException ae){
+            //通过处理Shiro的运行时AuthenticationException就可以控制用户登录失败或密码错误时的情景
+            logger.info("对用户[" + username + "]进行登录验证..验证未通过,堆栈轨迹如下");
+            ae.printStackTrace();
+            redirectAttributes.addFlashAttribute("message", "用户名或密码不正确");
+        }
+        if (subject.isAuthenticated()) {
+            // 验证成功在Session中保存用户信息
             final User authUserInfo = userService.selectByUsername(user.getUsername());
             if (authUserInfo != null) {
                 request.getSession().setAttribute("userInfo", authUserInfo);
             }
-//        } catch (AuthenticationException e) {
-//            // 身份验证失败
-//            model.addAttribute("error", "用户名或密码错误 ！");
-//            return "login";
-//        }
-        return "redirect:/";
+            return "redirect:/";
+        } else {
+            token.clear();
+            return "redirect:/login";
+        }
+
+
     }
 
     /**
@@ -75,30 +108,9 @@ public class UserController {
      */
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public String logout(HttpSession session) {
+        //使用权限管理工具进行用户的退出，跳出登录，给出提示信息
+        SecurityUtils.getSubject().logout();
         session.removeAttribute("userInfo");
-        // 登出操作
-//        Subject subject = SecurityUtils.getSubject();
-//        subject.logout();
         return "redirect:/login";
     }
-//
-//    /**
-//     * 基于角色 标识的权限控制案例
-//     */
-//    @RequestMapping(value = "/admin")
-//    @ResponseBody
-//    @RequiresRoles(value = RoleSign.ADMIN)
-//    public String admin() {
-//        return "拥有admin角色,能访问";
-//    }
-//
-//    /**
-//     * 基于权限标识的权限控制案例
-//     */
-//    @RequestMapping(value = "/create")
-//    @ResponseBody
-//    @RequiresPermissions(value = PermissionSign.USER_CREATE)
-//    public String create() {
-//        return "拥有user:create权限,能访问";
-//    }
 }
