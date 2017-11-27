@@ -57,7 +57,7 @@
             <li class="dropdown user">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                     <img alt="" src="assets/img/avatar1_small.jpg"/>
-                    <span class="username"> ${username} </span>
+                    <span class="username"> ${realname} </span>
                     <i class="fa fa-angle-down"></i>
                 </a>
                 <ul class="dropdown-menu">
@@ -105,31 +105,31 @@
                             class="selected"> </span>
                     </a>
                 </li>
-
-                <li class="">
-                    <a href="javascript:;">
-                        <i class="fa fa-gears"></i><span class="title"> 系统管理 </span><span
-                            class="arrow "> </span>
-                    </a>
-                    <ul class="sub-menu">
-                        <li>
-                            <a href="javascript:;">
-                                用户管理
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:;">
-                                角色管理
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:;">
-                                权限管理
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
+                <@shiro.hasPermission name="user:query">
+                    <li class="">
+                        <a href="javascript:;">
+                            <i class="fa fa-gears"></i><span class="title"> 系统管理 </span><span
+                                class="arrow "> </span>
+                        </a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a href="javascript:;">
+                                    用户管理
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:;">
+                                    角色管理
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:;">
+                                    权限管理
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </@shiro.hasPermission>
                 <li class="">
                     <a href="javascript:;">
                         <i class="fa fa-user"></i><span class="title"> 个人中心 </span><span
@@ -243,7 +243,10 @@
             <div class="row">
                 <div class="col-md-12">
                     <!-- BEGIN PAGE TITLE & BREADCRUMB-->
-                    <h3 class="page-title" id="index-page-title">Dashboard</h3>
+                    <h3 class="page-title" id="index-page-title">
+                    <@shiro.user>
+                        欢迎[<@shiro.principal/>]登录
+                    </@shiro.user> </h3>
                     <ul class="page-breadcrumb breadcrumb">
                         <li>
                             <i class="fa fa-home"></i>

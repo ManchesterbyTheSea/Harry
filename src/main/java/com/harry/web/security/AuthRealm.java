@@ -8,6 +8,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.util.ByteSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,9 +56,11 @@ public class AuthRealm extends AuthorizingRealm {
 
         //查出是否有此用户
         User user=userService.selectByUsername(token.getUsername());
+        ByteSource credentialsSalt = ByteSource.Util.bytes(token.getUsername());
+
         if(user != null){
             // 若存在，将此用户存放到登录认证info中，无需自己做密码对比，Shiro会为我们进行密码对比校验
-            return new SimpleAuthenticationInfo(user.getUsername(), user.getPassword(), getName());
+            return new SimpleAuthenticationInfo(user.getUsername(), user.getPassword(), credentialsSalt, getName());
         }
         return null;
     }

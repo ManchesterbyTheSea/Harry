@@ -55,7 +55,7 @@ Purchase: http://themeforest.net/item/metronic-responsive-admin-dashboard-templa
         <h3 class="form-title">用户登录</h3>
         <div class="alert alert-danger display-hide">
             <button class="close" data-close="alert"></button>
-            <span>
+            <span id="span-danger">
 				 输入您的用户名和密码
 			</span>
         </div>
@@ -455,7 +455,7 @@ Purchase: http://themeforest.net/item/metronic-responsive-admin-dashboard-templa
 <script src="assets/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
 <!-- END CORE PLUGINS -->
 <!-- BEGIN PAGE LEVEL PLUGINS -->
-<script src="assets/plugins/jquery-validation/dist/jquery.validate.min.js" type="text/javascript"></script>
+<script src="assets/plugins/jquery-validation/jquery.validate.min.js" type="text/javascript"></script>
 <script src="assets/plugins/backstretch/jquery.backstretch.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
 <!-- END PAGE LEVEL PLUGINS -->

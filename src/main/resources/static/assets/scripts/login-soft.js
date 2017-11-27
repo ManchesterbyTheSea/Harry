@@ -18,7 +18,7 @@ var Login = function() {
             },
 
             messages : {
-                loginName : {
+                username : {
                     required : "用户名不能为空."
                 },
                 password : {
@@ -29,6 +29,7 @@ var Login = function() {
             invalidHandler : function(event, validator) { // display error
                 // alert on form
                 // submit
+                $('#span-danger').html("输入您的用户名和密码");
                 $('.alert-danger', $('.login-form')).show();
             },
 
@@ -52,9 +53,21 @@ var Login = function() {
             },
 
             submitHandler : function(form) {
+                var action = form.action;
+
                 var passwordInput = $('[name="password"]');
-                passwordInput.val(sha256_digest(passwordInput.val()));
-                form.submit();
+                // passwordInput.val(sha256_digest(passwordInput.val()));
+                var data = $(form).serialize();
+                $.post(action, data, function(result) {
+                    if (result.code == 200) {
+                        location.href = result.data;
+                    } else {
+                        passwordInput.val("");
+                        $('#span-danger').html(result.info);
+                        $('.alert-danger', $('.login-form')).show();
+                    }
+                });
+                // form.submit();
             }
         });
 

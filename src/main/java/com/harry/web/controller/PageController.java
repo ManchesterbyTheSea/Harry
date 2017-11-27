@@ -27,7 +27,7 @@ public class PageController {
         if (user == null) {
             return "login";
         }
-        map.put("username", user.getUsername());
+        map.put("realname", user.getRealname());
         return "index";
     }
 

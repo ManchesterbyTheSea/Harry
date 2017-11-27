@@ -1,6 +1,7 @@
 package com.harry.web.config;
 
 import com.harry.web.security.AuthRealm;
+import com.harry.web.security.MyCredentialsMatcher;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
@@ -51,10 +52,18 @@ public class ShiroConfig {
 
     //配置自定义的权限登录器
     @Bean(name="authRealm")
-    public AuthRealm authRealm(EhCacheManager cacheManager) {
+    public AuthRealm authRealm(@Qualifier("credentialsMatcher") MyCredentialsMatcher credentialsMatcher) {
         AuthRealm authRealm=new AuthRealm();
-        authRealm.setCacheManager(cacheManager);
+        authRealm.setCredentialsMatcher(credentialsMatcher);
         return authRealm;
+    }
+
+    @Bean(name="credentialsMatcher")
+    public MyCredentialsMatcher getCredentialsMatcher (EhCacheManager ehCacheManager) {
+        MyCredentialsMatcher myCredentialsMatcher = new MyCredentialsMatcher(ehCacheManager);
+        myCredentialsMatcher.setHashAlgorithmName("md5");
+        myCredentialsMatcher.setHashIterations(3);
+        return myCredentialsMatcher;
     }
 
     @Bean
