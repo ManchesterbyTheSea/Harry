@@ -263,7 +263,15 @@ var Login = function() {
             },
 
             submitHandler : function(form) {
-                form.submit();
+                var action = form.action;
+                var data = $(form).serialize();
+                $.post(action, data, function(result) {
+                    if (result.code == 200) {
+                        alert(result.data);
+                    }
+                    location.href = "/login";
+                });
+                // form.submit();
             }
         });
 

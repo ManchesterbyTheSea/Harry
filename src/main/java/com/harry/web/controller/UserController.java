@@ -7,16 +7,10 @@ import javax.validation.Valid;
 
 import com.harry.web.model.User;
 import com.harry.web.service.UserService;
-//import org.apache.commons.codec.digest.DigestUtils;
-//import org.apache.shiro.SecurityUtils;
-//import org.apache.shiro.authc.AuthenticationException;
-//import org.apache.shiro.authc.UsernamePasswordToken;
-//import org.apache.shiro.authz.annotation.RequiresPermissions;
-//import org.apache.shiro.authz.annotation.RequiresRoles;
-//import org.apache.shiro.subject.Subject;
 import com.harry.web.utils.ApiRestfulResponse;
 import com.harry.web.utils.ApiResult;
 import com.harry.web.utils.ApiResultCode;
+import com.harry.web.utils.PasswordHashUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
@@ -99,7 +93,7 @@ public class UserController {
             // 验证成功在Session中保存用户信息
             final User authUserInfo = userService.selectByUsername(user.getUsername());
             if (authUserInfo != null) {
-                request.getSession().setAttribute("userInfo", authUserInfo);
+                subject.getSession().setAttribute("userInfo", authUserInfo);
             }
             return ApiRestfulResponse.success("/index");
         } else {
@@ -121,5 +115,32 @@ public class UserController {
         //使用权限管理工具进行用户的退出，跳出登录，给出提示信息
         SecurityUtils.getSubject().logout();
         return "redirect:/login";
+    }
+
+    /**
+     * 用户注册
+     *
+     * @param user
+     * @return
+     */
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult<String> register(@Valid User user) {
+        if (user == null) {
+            return ApiRestfulResponse.success("注册失败，参数错误！");
+        }
+        String username = user.getUsername();
+        User account = userService.selectByUsername(username);
+        if (account != null) {
+            return ApiRestfulResponse.success("注册失败，该用户已存在！");
+        }
+
+        String password = PasswordHashUtil.passwordHash(user.getPassword(), username);
+        user.setPassword(password);
+        int result = userService.insert(user);
+        if (result >= 0) {
+            return ApiRestfulResponse.success("注册成功！");
+        }
+        return ApiRestfulResponse.success("注册失败，未知错误！");
     }
 }

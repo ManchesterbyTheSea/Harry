@@ -1,6 +1,8 @@
 package com.harry.web.controller;
 
 import com.harry.web.model.User;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -22,13 +24,17 @@ public class PageController {
     }
 
     @RequestMapping(value={"/", "/index"})
-    public String index(HttpServletRequest request, Map<String, Object> map) {
-        User user = (User) request.getSession().getAttribute("userInfo");
-        if (user == null) {
-            return "login";
+    public String index(Map<String, Object> map) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated()) {
+            User user = (User) subject.getSession().getAttribute("userInfo");
+            if (user != null) {
+                map.put("realname", user.getRealname());
+                return "index";
+            }
         }
-        map.put("realname", user.getRealname());
-        return "index";
+
+        return "login";
     }
 
     /**

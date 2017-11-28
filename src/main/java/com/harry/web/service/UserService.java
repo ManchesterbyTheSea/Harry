@@ -22,4 +22,11 @@ public interface UserService {
      * @return
      */
     User selectByUsername(String username);
+
+    /**
+     * 创建用户
+     * @param record
+     * @return
+     */
+    int insert(User record);
 }

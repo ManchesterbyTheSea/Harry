@@ -8,7 +8,7 @@
 <head>
     <base href="">
     <meta charset="utf-8" />
-    <title>Quick4j</title>
+    <title>Admin</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <meta content="" name="description" />
@@ -246,7 +246,8 @@
                     <h3 class="page-title" id="index-page-title">
                     <@shiro.user>
                         欢迎[<@shiro.principal/>]登录
-                    </@shiro.user> </h3>
+                    </@shiro.user>
+                    </h3>
                     <ul class="page-breadcrumb breadcrumb">
                         <li>
                             <i class="fa fa-home"></i>

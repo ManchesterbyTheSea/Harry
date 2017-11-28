@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
+ * 权限信息验证
  * Created by chenhaibo on 2017/11/24.
  */
 public class AuthRealm extends AuthorizingRealm {
@@ -28,7 +29,11 @@ public class AuthRealm extends AuthorizingRealm {
     private PermissionService permissionService;
 
 
-
+    /**
+     * 授权访问控制，用于对用户进行的操作授权，证明该用户是否允许进行当前操作，如访问某个链接，某个资源文件等
+     * @param principalCollection
+     * @return
+     */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         logger.info("##################执行Shiro权限认证##################");
@@ -49,6 +54,12 @@ public class AuthRealm extends AuthorizingRealm {
         return null;
     }
 
+    /**
+     * 验证用户身份
+     * @param authenticationToken
+     * @return
+     * @throws AuthenticationException
+     */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         //UsernamePasswordToken对象用来存放提交的登录信息

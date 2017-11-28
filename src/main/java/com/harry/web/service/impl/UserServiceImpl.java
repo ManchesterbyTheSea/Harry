@@ -32,4 +32,9 @@ public class UserServiceImpl implements UserService {
         }
         return userList.get(0);
     }
+
+    @Override
+    public int insert(User record) {
+        return userMapper.insertSelective(record);
+    }
 }
